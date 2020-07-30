@@ -54,7 +54,7 @@ public class QueryController {
 		Set<String> keys = fieldList.keySet();
 		String fl =	String.join(",", keys);
 		
-		return solrServer + "/select?q=" + queryString + "&wt=json&fl=" + fl ;
+		return solrServer + "/select?" + queryString + "&fl=" + fl ;
 	}
 	
 	private String buildDownloadUrl (String fileName){
@@ -80,7 +80,7 @@ public class QueryController {
 		
 		StringBuffer content = new StringBuffer();
 
-		try {			
+		try {	
 			URL url = new URL(buildQueryUrl(queryString));
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod("GET");
@@ -108,9 +108,9 @@ public class QueryController {
 		String fileName = "search_result_" + timestamp;
 		String outputFile = filePath + fileName;
 		List<List<String>> csv = f.JSONtoCSV(content.toString(), fieldList);
-		f.saveCSVFile(csv, sep, outputFile, true); //always compress CSV file
+		f.saveCSVFile(csv, sep, outputFile, true); //always compress CSV file 
 		
-		return buildDownloadUrl(fileName + ".zip");	
+		return buildDownloadUrl(fileName + ".zip");		
 	}
 	
 	@RequestMapping("/query/download")
