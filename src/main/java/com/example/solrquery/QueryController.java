@@ -10,6 +10,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -78,38 +80,43 @@ public class QueryController {
 	@RequestMapping("/query")
 	public String executeQuery(@RequestParam(required = true) String queryString) {
 		
-		StringBuffer content = new StringBuffer();
-
-		try {	
-			URL url = new URL(buildQueryUrl(queryString));
-			HttpURLConnection con = (HttpURLConnection) url.openConnection();
-			con.setRequestMethod("GET");
+		String date = ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuuMMdd"));
+		String sufix = queryString + date;
+		String fileName = "search_result-" + String.valueOf(sufix.hashCode());
+		String outputFile = filePath + fileName;
+		
+		//Only creates the CSV file if a file created from the same query does not already exist
+		if (Files.notExists(Paths.get(outputFile + ".zip"))){
+			StringBuffer content = new StringBuffer();
 			
-			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
-			String inputLine;
-			
-			//Read the response
-			while ((inputLine = in.readLine()) != null) {
-				content.append(inputLine);
+			try {	
+				URL url = new URL(buildQueryUrl(queryString));
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				con.setRequestMethod("GET");
+				
+				BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), StandardCharsets.UTF_8));
+				String inputLine;
+				
+				//Read the response
+				while ((inputLine = in.readLine()) != null) {
+					content.append(inputLine);
+				}
+				
+				in.close();
+				con.disconnect();
+				
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 			
-			in.close();
-			con.disconnect();
-			
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			//Convert to CSV and save to compressed file		
+			FileFormatter f = new FileFormatter();
+			List<List<String>> csv = f.JSONtoCSV(content.toString(), fieldList);
+			f.saveCSVFile(csv, sep, outputFile, true); //always compress CSV file 
 		}
-		
-		//Convert to CSV and save to compressed file		
-		FileFormatter f = new FileFormatter();
-		String timestamp = ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuuMMddHHmmss"));
-		String fileName = "search_result_" + timestamp;
-		String outputFile = filePath + fileName;
-		List<List<String>> csv = f.JSONtoCSV(content.toString(), fieldList);
-		f.saveCSVFile(csv, sep, outputFile, true); //always compress CSV file 
-		
+			
 		return buildDownloadUrl(fileName + ".zip");		
 	}
 	
