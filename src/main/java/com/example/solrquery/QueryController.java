@@ -5,10 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -19,10 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -48,8 +43,11 @@ public class QueryController {
 	@Value("${file.content.separator}")
 	private char sep;
 	
-	@Autowired
-	private ApplicationContext context;
+	@Value("${server.ip}")
+	private String host;
+	
+	@Value("${server.port}")
+	private String port;
 	
 	private String buildQueryUrl (String queryString){
 		
@@ -60,21 +58,8 @@ public class QueryController {
 	}
 	
 	private String buildDownloadUrl (String fileName){
-		
-		String host = new String();
-		String port = new String();
-		String url = "http://";
-		
-		try {
-            host = InetAddress.getLocalHost().getHostAddress();
-            port = context.getBean(Environment.class).getProperty("local.server.port");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-		
-		url += host + ":" + port + "/query/download?fileName=" + fileName;
-		
-		return url;
+
+		return "http://" + host + ":" + port + "/query/download?fileName=" + fileName;
 	}
 	
 	@RequestMapping("/query")
