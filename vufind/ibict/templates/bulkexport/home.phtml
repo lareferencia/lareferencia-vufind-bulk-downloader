@@ -1,0 +1,38 @@
+<?php 
+$form = $this->form;
+$form->prepare();
+
+$form->setAttribute('action', $this->url('bulkexport-csv'));
+$form->setAttribute('method', 'post');
+
+$formLabel = $this->plugin('formLabel');
+echo $this->form()->openTag($form);
+?>
+
+<div style="margin-bottom:40px" class="text-center">
+	<h4>Please inform your email address.<br>You will receive a link for downloading the CSV file when it is ready.</h4>
+</div>
+
+<div style="margin:20px" class="form_element">
+<?php
+    $email = $form->get('email');
+    echo $formLabel->openTag() . $email->getOption('label');
+    echo $this->formEmail($email);
+    echo $this->formElementErrors($email);
+    echo $formLabel->closeTag();
+?></div>
+
+<div style="margin:20px" class="form_element">
+<?php
+    $captcha = $form->get('captcha');
+    echo $formLabel->openTag() . $captcha->getOption('label');
+    echo $this->formCaptcha($captcha);
+    echo $this->formElementErrors($captcha);
+    echo $formLabel->closeTag();
+?></div>
+
+<div style="margin:20px">
+	<?=$this->formElement($form->get('send')) ?>
+</div>
+
+<?=$this->form()->closeTag() ?>
