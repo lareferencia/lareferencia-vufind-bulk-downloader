@@ -1,4 +1,4 @@
-package com.example.solrquery.util;
+package org.lareferencia.services.vufindbulkdownloader;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,7 +21,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.opencsv.CSVWriter;
 
-public class FileFormatter {
+public class FileUtils {
 	
 	@SuppressWarnings("unchecked")
 	public List<List<String>> JSONtoCSV (String json, Map<String, String> fieldList){

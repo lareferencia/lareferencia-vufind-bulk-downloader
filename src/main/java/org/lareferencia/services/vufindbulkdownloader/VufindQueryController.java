@@ -1,4 +1,4 @@
-package com.example.solrquery;
+package org.lareferencia.services.vufindbulkdownloader;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,10 +26,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.solrquery.util.FileFormatter;
-
 @RestController
-public class QueryController {
+public class VufindQueryController {
 	
 	@Value("${query.solr-server}")
 	private String solrServer;
@@ -97,7 +95,7 @@ public class QueryController {
 			}
 			
 			//Convert to CSV and save to compressed file		
-			FileFormatter f = new FileFormatter();
+			FileUtils f = new FileUtils();
 			List<List<String>> csv = f.JSONtoCSV(content.toString(), fieldList);
 			f.saveCSVFile(csv, sep, outputFile, true); //always compress CSV file 
 		}
