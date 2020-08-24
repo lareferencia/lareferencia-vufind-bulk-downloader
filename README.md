@@ -1,14 +1,45 @@
-## Vufind Search Results Bulk Downloader Service and Front-End Customization
+# Vufind Search Results Bulk Downloader Service and Front-End Customization
 
 Service, templates, controllers, and forms for customizing VuFind so the search results can be exported in CSV format. An "Export CSV" link is added to the search results page, opening a form where the user informs their email address and provides a captcha-based form validation. The actual CSV file creation is performed by the external service, which is called by VuFind and returns a file download link, which is in turn emailed to the user.
 
 *Developed by LA Referencia / IBICT*
 
-### Running the export service
+## Running the export service
 
-TBD
+### Install
 
-### Implementing the customizations in VuFind
+1. Clone/download this repository
+
+2. Build using Maven/Java8
+
+```
+$ ./build.sh
+```
+
+3. Edit config files
+
+> - config/application.properties (first make a copy from config/application.properties.model)
+
+> - bullk-downloader.conf
+
+### Run
+
+- Run from bash
+
+```
+$ ./bulk-downloader.jar
+```
+
+- Run as service
+
+```
+$ sudo ln -s /path/to/bulk-downloader /etc/init.d/bulk-downloader
+$ sudo /etc/init.d/bulk-downloader start
+``` 
+
+- Navigate to http://host:port/ 
+
+## Implementing the customizations in VuFind
 
 In the `vufind` folder:
 
