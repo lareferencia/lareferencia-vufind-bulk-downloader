@@ -17,13 +17,43 @@ class BulkExportConfirm extends Form
         parent::__construct();
 
         $this->captcha = $captcha;
-
-        $this->add([
+		
+		$this->add([
+			'type' => Element\Select::class,
+			'attributes' => [
+				'multiple' => 'multiple',
+			],
+			'name' => 'fields',
+			'options' => [
+				'disable_inarray_validator' => true,
+			],
+		]);
+		
+		$this->add([
+             'type' => Element\Checkbox::class,
+             'name' => 'abstract',
+             'options' => [
+                     'use_hidden_element' => true,
+                     'checked_value' => 'yes',
+                     'unchecked_value' => 'no',
+             ],
+		]);
+		
+		$this->add([
+             'type' => Element\Select::class,
+             'name' => 'os',
+             'options' => [
+                     'value_options' => [
+                             '0' => 'Windows',
+                             '1' => 'Linux',
+                             '2' => 'Mac OS',
+                     ],
+             ],
+		]);
+		
+		$this->add([
             'type' => Element\Email::class,
             'name' => 'email',
-            'options' => [
-                'label' => 'Email address: ',
-            ],
         ]);
 		
 		$this->add([
@@ -38,15 +68,21 @@ class BulkExportConfirm extends Form
             'name' => 'send',
             'type'  => 'Submit',
             'attributes' => [
-                'value' => 'Submit',
+                'value' => 'Enviar',
 				'class' => 'btn btn-primary',
             ],
         ]);
+		
+		$fieldsInput = [
+			'name' => 'fields',
+			'required' => false,
+		];
 
-        $captchaInput = new Input('captcha');
+		$captchaInput = new Input('captcha');
 		$sendInput = new Input('send');
 		
 		$inputFilter = new InputFilter();
+		$inputFilter->add($fieldsInput);
 		$inputFilter->add($captchaInput);
 		$inputFilter->add($sendInput);
 		

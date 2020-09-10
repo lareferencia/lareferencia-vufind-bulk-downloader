@@ -11,6 +11,9 @@ use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\ParamBag;
 
+use Zend\Http\Client as HttpClient;
+use Zend\Http\Request;
+
 use Zend\Captcha\ReCaptcha;
  
 class BulkExportController extends AbstractBase
@@ -22,62 +25,132 @@ class BulkExportController extends AbstractBase
 	
 	public function homeAction()
 	{		
+		// Get the number of records returned in the search
+		$totalRecords = $this->params()->fromQuery('total');
+		
+		// Get the mandatory and optional lists of fields
+		$exportConfig = $this->getConf($this->bulkExportConf);
+		$defaultFields = $exportConfig->Query->defaultFields;
+		$selectFields = $exportConfig->Query->selectFields;
+
 		// Display the export form
 		$form = new BulkExportConfirm($this->getCaptcha());
 		
-		return $this->createViewModel(['form' => $form]);
+		return $this->createViewModel(['form' => $form, 'total' => $totalRecords, 'defFields' => $defaultFields, 'selFields' => $selectFields]);
 	}
 	
 	public function csvAction()
     {	
+		// Routing helpers
+		$serverUrlHelper = $this->getViewRenderer()->plugin('serverurl');
+		$urlHelper = $this->getViewRenderer()->plugin('url');
+		
+		// Retrieve form data
 		$form = new BulkExportConfirm($this->getCaptcha());
-		$data = $this->params()->fromPost();
+		$data = $this->params()->fromPost();		
 		$form->setData($data);
 		
 		// Use the captcha input to validate the form data
 		if ($form->isValid()) {		
+			$email = $form->get('email')->getValue();
+			
+			// Build the field list
 			$exportConfig = $this->getConf($this->bulkExportConf);
+			$defaultFields = explode(',', $exportConfig->Query->defaultFields);
+			$selectFields = explode(',', $exportConfig->Query->selectFields);
+			$fields = $form->get('fields')->getValue();
+			$abstract = $form->get('abstract')->getValue();
+			$fullFieldList = $defaultFields;
+			
+			if(!empty($fields)){
+				foreach ($fields as $field){
+					array_push($fullFieldList, $selectFields[$field]);
+				}	
+			}
+			
+			if($abstract == 'yes'){
+				array_push($fullFieldList, 'abstract');
+			}
+			
+			// Define file encoding
+			$os = $form->get('os')->getValue();
+			$encoding = 'UTF-8'; // default encoding
+			
+			if ($os == 0) {
+				$encoding = 'ISO-8859'; // Windows encoding
+			}
 			
 			// Export service params
-			$backgroundCall = $exportConfig->Service->backgroundClass;
 			$serviceUrl = $exportConfig->Service->serviceUrl;
+			$auxServUrl = $exportConfig->Service->auxServUrl;
 			$paramString = $this->getParamString();
+			$paramString .= '&fl=' . implode(',', $fullFieldList);
+			$paramString .= '&encoding=' . $encoding;
+
+			// Checks whether an export file generated from this query already exists
+			$fileExists = $this->callExportService($auxServUrl, $paramString, null, null);
+							
+			$exportConfig = $this->getConf($this->bulkExportConf);
+			$maxTotal = $exportConfig->Query->maxDownload;
+			$totalRecords = $this->params()->fromQuery('total');
 			
-			// Email params
-			$email = $form->get('email')->getValue();
-			$sender = $exportConfig->Mail->senderAddress;
-			$subject = $exportConfig->Mail->mailSubject;
-			$msgTop = $exportConfig->Mail->msgTop;
-			$msgBottom = $exportConfig->Mail->msgBottom;
-			
-			// Call the export service in background
-			$params = '"' . $email . '|' . $sender . '|' . $subject . '|' . $msgTop . '|' . $msgBottom . '|' . $serviceUrl . '|' . $paramString . '"';
-			$cmd = 'php ' . $backgroundCall . ' ' . $params;
+			if (($totalRecords <= $maxTotal) or ($fileExists == 'true')) {
+				// Immediate file download
+				$response = $this->callExportService($serviceUrl, $paramString, $encoding, $email);
 		
-			if (substr(php_uname(), 0, 7) == 'Windows'){
-				pclose(popen('start /B ' . $cmd, 'r')); 
+				// After export file is ready, show download window
+				$downloadUrl = $serverUrlHelper($urlHelper('bulkexport-download')). '?url=' . $response;
+				$params = ['exportType' => 'link', 'url' => $downloadUrl];
+				$msg = ['translate' => false, 'html' => true, 'msg' => $this->getViewRenderer()->render('cart/export-success.phtml', $params)];
+				$this->flashMessenger()->addMessage($msg, 'success');
 			}
 			else {
-				exec($cmd . ' > /dev/null &');  
-			}
+				// File download link sent later by email
+				$backgroundCall = $exportConfig->Service->backgroundClass;
 			
-			$params = ['email' => $email];
-			$msg = ['translate' => false, 'html' => true, 'msg' => $this->getViewRenderer()->render('bulkexport/captcha-success.phtml', $params)];
-			$this->flashMessenger()->addMessage($msg, 'success');
-           
-			return $this->createViewModel();
+				// Call the export service in background
+				$params = '"' . $email . '|' . $serviceUrl . '|' . $paramString . '|' . $encoding . '"';
+				$cmd = 'php ' . $backgroundCall . ' ' . $params;
+		
+				if (substr(php_uname(), 0, 7) == 'Windows'){
+					pclose(popen('start /B ' . $cmd, 'r')); 
+				}
+				else {
+					exec($cmd . ' > /dev/null &');  
+				}
+			
+				$params = ['email' => $email];
+				$msg = ['translate' => false, 'html' => true, 'msg' => $this->getViewRenderer()->render('bulkexport/captcha-success.phtml', $params)];
+				$this->flashMessenger()->addMessage($msg, 'success');
+			}
 		} else {
 			// Captcha validation failed, ask the user to try again
-			$serverUrlHelper = $this->getViewRenderer()->plugin('serverurl');
-			$urlHelper = $this->getViewRenderer()->plugin('url');
 			$backUrl = $serverUrlHelper($urlHelper('bulkexport-home'));
 			$params = ['url' => $backUrl];
 			$msg = ['translate' => false, 'html' => true, 'msg' => $this->getViewRenderer()->render('bulkexport/captcha-error.phtml', $params)];
 			$this->flashMessenger()->addMessage($msg, 'error');
-			
-			return $this->createViewModel();
 		}
+		return $this->createViewModel();
     }
+	
+	public function downloadAction()
+	{
+		$downloadUrl = $this->params()->fromQuery('url');
+		$client = $this->createClient($downloadUrl, Request::METHOD_GET);
+		
+        try {
+            $response = $client->send();
+
+			if (!$response->isSuccess()) {
+				throw HttpErrorException::createFromResponse($response);
+			}
+			
+			return $response;
+        
+		} catch (Exception $ex) {
+            sprintf('Unexpected exception.');
+        }
+	}
 	
 	protected function getCaptcha()
 	{
@@ -224,6 +297,45 @@ class BulkExportController extends AbstractBase
             // otherwise the condition should match to apply the filter
             $filterList[] = $filter;
         }
+    }
+	
+	protected function callExportService($serviceUrl, $paramString, $encoding, $email)
+	{	
+		$client = $this->createClient($serviceUrl, Request::METHOD_POST);
+		$client->setParameterPost(['queryString' => $paramString, 'download' => true, 'encoding' => $encoding, 'userEmail' => $email]);
+        $client->setEncType(HttpClient::ENC_URLENCODED);
+
+        try {
+            $response = $client->send();
+			
+			if (!$response->isSuccess()) {
+				throw HttpErrorException::createFromResponse($response);
+			}
+			
+			return $response->getBody();
+        
+		} catch (Exception $ex) {
+            sprintf('Unexpected exception.');
+        }
+	}
+	
+	protected function createClient($url, $method)
+    {
+        $exportConfig = $this->getConf($this->bulkExportConf);
+		$timeout = $exportConfig->Service->timeout;
+		
+		$client = new HttpClient();
+        $client->setAdapter('Zend\Http\Client\Adapter\Socket');
+        $client->setOptions(['timeout' => $timeout]);
+        $client->setUri($url);
+        $client->setMethod($method);
+		
+		if ($this->serviceLocator->has(\VuFindHttp\HttpService::class)) {
+            $proxy = $this->serviceLocator->get(\VuFindHttp\HttpService::class);
+			$proxy->proxify($client);
+        }
+		
+        return $client;
     }
 	
 	protected function loadSpecs()

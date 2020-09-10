@@ -1,5 +1,5 @@
 #Solr query properties
-query.solr-server = http://200.130.45.74:8081/solr/biblio
+query.solr-server = http://127.0.0.1:8081/solr/biblio
 query.fields = {id:"Identificador", \
 				title:"Titulo", \
 				author:"Primeiro Autor", \
@@ -16,6 +16,34 @@ query.fields = {id:"Identificador", \
 #CSV file properties
 file.path = C:\\Archive\\
 file.content.separator = ;
+
+#Email properties
+
+#SMTP server
+smtp.host = smtp.gmail.com
+smtp.port = 587
+#Email sender address which will appear in the 'From:' and 'Reply-to:' fields in the e-mails
+#sent to users. Also used for SMTP server authentication
+mail.sender = sender@gmail.com
+mail.sender-pwd = xyzw12345
+#Email subject for the confirmation e-mails
+mail.confirm-subject = Search CSV Export
+#Confirmation message sent when the file was immediately downloaded. Some HTML is fine (mail 
+#content type is set to 'text/html')
+mail.ready-msg = Dear user,<br><br>Your CSV export file was successfully created.<br><br>Sincerely,<br>Your admin team.
+#Confirmation message sent when the export was requested but the number of records is too large, 
+#so the download link will be sent later in another email. It is split into two parts so the file   
+#creation time estimate can be inserted in the mail body, after requestedMsgTop and before
+#requestedMsgBottom. Some HTML is fine
+mail.wait-msg-top = Dear user,<br><br>Your CSV export request was received and the file is being created. Due to its size, it will take approximatelly
+mail.wait-mg-bottom = to complete. You will receive another email with the link for download when it is ready.<br><br>Sincerely,<br>Your admin team.
+#Email subject for the download link email (do not include the '|' array separator character)
+mail.link-subject = Search CSV Export Download
+#Download link email message. It is split into two parts so the download link can be inserted  
+#in the mail body, after msgTop and before msgBottom (do not include the '|' array separator 
+#character). Some HTML is fine
+mail.link-msg-top = Dear user,<br><br>Your CSV export file is ready and can be downloaded at
+mail.link-msg-bottom = <br><br>The file will be available for download for 24 hours.<br><br>Sincerely,<br>Your admin team.
 
 #Service host properties
 server.ip = 127.0.0.1

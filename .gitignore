@@ -55,3 +55,6 @@ build/
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 >>>>>>> bfb0461306721bba45518dcb7aaf5ab4b1890436
+
+# Duplicated properties file #
+/config/application.properties

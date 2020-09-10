@@ -17,6 +17,7 @@ $config = [
 $staticRoutes = [
 	'BulkExport/Home', 
 	'BulkExport/CSV',
+	'BulkExport/Download',
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();

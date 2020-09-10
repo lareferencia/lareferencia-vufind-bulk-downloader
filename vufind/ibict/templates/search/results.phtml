@@ -129,7 +129,7 @@
 	  
 	  <?php /* New link for CSV export */ ?>
 	  &mdash;
-	  <a href="<?=$this->url('bulkexport-home')?>" data-lightbox><i class="fa fa-external-link" aria-hidden="true"></i> <?=$this->transEsc('Export CSV')?></a>
+	  <a href="<?=$this->url('bulkexport-home') . '?total=' . $recordTotal?>" data-lightbox><i class="fa fa-external-link" aria-hidden="true"></i> <?=$this->transEsc('export_csv')?></a>
 	  <?php /* End new link */ ?> 
 	  
     </div>	
