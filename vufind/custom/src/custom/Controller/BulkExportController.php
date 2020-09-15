@@ -97,7 +97,6 @@ class BulkExportController extends AbstractBase
 			// Checks whether an export file generated from this query already exists
 			$fileExists = $this->callExportService($auxServUrl, $paramString, null, null, null, null);
 							
-			$exportConfig = $this->getConf($this->bulkExportConf);
 			$maxTotal = $exportConfig->Query->maxDownload;
 			$totalRecords = $this->params()->fromQuery('total');
 			
