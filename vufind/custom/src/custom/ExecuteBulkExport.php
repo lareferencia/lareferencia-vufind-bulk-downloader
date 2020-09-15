@@ -5,6 +5,8 @@ class ExecuteBulkExport
 	protected $email;
 	protected $serviceUrl;
 	protected $paramString;
+	protected $totalRecords;
+	protected $hasAbstract;
 	protected $encoding;
 	
 	public function __construct ($params)
@@ -14,13 +16,20 @@ class ExecuteBulkExport
 		$this->email = $paramsArray[0];
 		$this->serviceUrl = $paramsArray[1];
 		$this->paramString = $paramsArray[2];
-		$this->encoding = $paramsArray[3];
+		$this->totalRecords = $paramsArray[3];
+		$this->hasAbstract = $paramsArray[4];
+		$this->encoding = $paramsArray[5];
 	}
 	
 	public function execute()
 	{
 		// Call the bulk downloader service to create the CSV file
-		$params = ['queryString' => $this->paramString, 'download' => false, 'encoding' => $this->encoding, 'userEmail' => $this->email];
+		$params = ['queryString' => $this->paramString, 
+				   'download' => false, 
+				   'totalRecords' => $this->totalRecords,
+				   'hasAbstract' => $this->hasAbstract,
+				   'encoding' => $this->encoding, 
+				   'userEmail' => $this->email];
 		$options = [
 			'http' => [
 				'header'  => "Content-type: application/x-www-form-urlencoded\r\n",

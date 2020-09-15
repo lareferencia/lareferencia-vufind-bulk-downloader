@@ -61,6 +61,7 @@ class BulkExportController extends AbstractBase
 			$fields = $form->get('fields')->getValue();
 			$abstract = $form->get('abstract')->getValue();
 			$fullFieldList = $defaultFields;
+			$hasAbstract = false;
 			
 			if(!empty($fields)){
 				foreach ($fields as $field){
@@ -69,7 +70,13 @@ class BulkExportController extends AbstractBase
 			}
 			
 			if($abstract == 'yes'){
-				array_push($fullFieldList, 'abstract');
+				$abstracts = explode(',', $exportConfig->Query->abstracts);
+				
+				foreach ($abstracts as $a){
+					array_push($fullFieldList, $a);
+				}
+				
+				$hasAbstract = true;
 			}
 			
 			// Define file encoding
@@ -88,7 +95,7 @@ class BulkExportController extends AbstractBase
 			$paramString .= '&encoding=' . $encoding;
 
 			// Checks whether an export file generated from this query already exists
-			$fileExists = $this->callExportService($auxServUrl, $paramString, null, null);
+			$fileExists = $this->callExportService($auxServUrl, $paramString, null, null, null, null);
 							
 			$exportConfig = $this->getConf($this->bulkExportConf);
 			$maxTotal = $exportConfig->Query->maxDownload;
@@ -96,7 +103,7 @@ class BulkExportController extends AbstractBase
 			
 			if (($totalRecords <= $maxTotal) or ($fileExists == 'true')) {
 				// Immediate file download
-				$response = $this->callExportService($serviceUrl, $paramString, $encoding, $email);
+				$response = $this->callExportService($serviceUrl, $paramString, $totalRecords, $hasAbstract, $encoding, $email);
 		
 				// After export file is ready, show download window
 				$downloadUrl = $serverUrlHelper($urlHelper('bulkexport-download')). '?url=' . $response;
@@ -109,7 +116,7 @@ class BulkExportController extends AbstractBase
 				$backgroundCall = $exportConfig->Service->backgroundClass;
 			
 				// Call the export service in background
-				$params = '"' . $email . '|' . $serviceUrl . '|' . $paramString . '|' . $encoding . '"';
+				$params = '"' . $email . '|' . $serviceUrl . '|' . $paramString . '|' . $totalRecords . '|' .  $hasAbstract . '|' . $encoding . '"';
 				$cmd = 'php ' . $backgroundCall . ' ' . $params;
 		
 				if (substr(php_uname(), 0, 7) == 'Windows'){
@@ -299,10 +306,15 @@ class BulkExportController extends AbstractBase
         }
     }
 	
-	protected function callExportService($serviceUrl, $paramString, $encoding, $email)
+	protected function callExportService($serviceUrl, $paramString, $totalRecords, $hasAbstract, $encoding, $email)
 	{	
 		$client = $this->createClient($serviceUrl, Request::METHOD_POST);
-		$client->setParameterPost(['queryString' => $paramString, 'download' => true, 'encoding' => $encoding, 'userEmail' => $email]);
+		$client->setParameterPost(['queryString' => $paramString, 
+								   'download' => true, 
+								   'totalRecords' => $totalRecords,
+								   'hasAbstract' => $hasAbstract,
+								   'encoding' => $encoding, 
+								   'userEmail' => $email]);
         $client->setEncType(HttpClient::ENC_URLENCODED);
 
         try {

@@ -68,7 +68,6 @@ class BulkExportConfirm extends Form
             'name' => 'send',
             'type'  => 'Submit',
             'attributes' => [
-                'value' => 'Enviar',
 				'class' => 'btn btn-primary',
             ],
         ]);

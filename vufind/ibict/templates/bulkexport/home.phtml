@@ -73,7 +73,7 @@ echo $this->form()->openTag($form);
 ?></div>
 
 <div style="margin-bottom:20px">
-	<?=$this->formElement($form->get('send')) ?>
+	<?=$this->formElement($form->get('send')->setValue($this->transEsc('Send')))?>	
 </div>
 
 <?=$this->form()->closeTag() ?>

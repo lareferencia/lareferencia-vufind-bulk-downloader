@@ -11,19 +11,20 @@ file.path = C:\\Archive\\
 file.sep-char = ;
 #Order in which columns will appear in the CSV, and their headers. This list of fields
 #must be synchronized with the list of fields available for export defined in VuFind
-file.header = {id:"Identificador", \
-			   title:"Título", \
-			   abstract:"Abstract", \
-			   author:"Primeiro Autor", \
-			   author2:"Co-Autores", \
-			   author_id_str:"Id do Autor", \
-			   shortIdent_author_str:"Id Curto do Autor", \
-			   format:"Tipo", \
-			   topic:"Tópicos", \
-			   instname_str:"Instituição", \
-			   publishDate:"Data de Publicação", \
-			   language:"Idioma", \
-			   url:"URL"}
+file.header = {"id":"Identificador", \
+			   "title":"Título", \
+			   "dc.description.resumo.por.fl_txt_mv":"Abstract Português", \
+			   "dc.description.abstract.eng.fl_txt_mv":"Abstract Inglês", \
+			   "author":"Primeiro Autor", \
+			   "author2":"Co-Autores", \
+			   "author_id_str":"Id do Autor", \
+			   "shortIdent_author_str":"Id Curto do Autor", \
+			   "format":"Tipo", \
+			   "topic":"Tópicos", \
+			   "instname_str":"Instituição", \
+			   "publishDate":"Data de Publicação", \
+			   "language":"Idioma", \
+			   "url":"URL"}
 
 ##Email properties##
 
@@ -51,7 +52,21 @@ mail.link-subject = Download do arquivo CSV
 mail.link-msg-top = Prezado usuário,<br><br>Seu arquivo CSV está pronto e pode ser baixado através do link
 mail.link-msg-bottom = <br><br>O arquivo ficará disponível para download por 24 horas.<br><br>Atenciosamente,<br>Equipe BDTD
 
+##Service delay parameters##
+
+#Creation time per record without abstract, in ms
+time.short-record = 1.4
+#Creation time per record with abstract, in ms
+time.long-record = 2.8
+#Server delay factor. Total creation time will be = (total records * time per record) * delay factor
+time.server-delay = 1.5
+#Labels for time units and the conjunction linking them in a formatted time duration
+time.units = {"day":"dia(s)", \
+			  "hour":"hora(s)", \
+			  "minute":"minuto(s)", \
+			  "conjunction":"e"}
+
 ##Service host properties##
 
 server.ip = 127.0.0.1
-server.port = 8081
+server.port = 8082

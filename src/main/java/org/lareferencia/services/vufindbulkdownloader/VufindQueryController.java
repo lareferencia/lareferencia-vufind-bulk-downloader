@@ -10,6 +10,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -78,6 +79,18 @@ public class VufindQueryController {
 	@Value("${mail.link-msg-bottom}")
 	private String linkMsgBottom;
 	
+	@Value("${time.short-record}")
+	private Double shortRecTime;
+	
+	@Value("${time.long-record}")
+	private Double longRecTime;
+	
+	@Value("${time.server-delay}")
+	private Double delay;
+	
+	@Value("#{${time.units}}")
+	private Map<String, String> timeUnits;
+	
 	@Value("${server.ip}")
 	private String host;
 	
@@ -105,9 +118,35 @@ public class VufindQueryController {
 		return fields;
 	}
 	
-	private String getTimeEstimate (){
+	private String getTimeEstimate (int totalRecords, boolean hasAbstract){
 		
-		return "5 minutes"; //TBD
+		String estimate = new String();
+		Double recTime = hasAbstract ? longRecTime : shortRecTime;
+		long totalTime = (long)(totalRecords * recTime * delay);
+		
+		Duration timeLeft = Duration.ofMillis(totalTime);	
+		long days = timeLeft.toDays();
+		timeLeft = timeLeft.minusDays(days);
+		long hours = timeLeft.toHours();
+		timeLeft = timeLeft.minusHours(hours);
+		long minutes = timeLeft.toMinutes();
+        
+		if (days > 0) {
+        	estimate = days + " " + timeUnits.get("day") + ", " + 
+        				hours + " " + timeUnits.get("hour") + " " + 
+						timeUnits.get("conjunction") + " " + 
+						minutes + " " + timeUnits.get("minute");    
+        }
+        else if (hours > 0){
+        	estimate = hours + " " + timeUnits.get("hour") + " " + 
+						timeUnits.get("conjunction") + " " + 
+						minutes + " " + timeUnits.get("minute");
+        }
+        else {
+        	estimate = minutes + " " + timeUnits.get("minute");
+        }
+		
+		return estimate;
 	}
 	
 	private void createFile (String queryString, String outputFile, String encoding){
@@ -162,6 +201,8 @@ public class VufindQueryController {
 	@RequestMapping("/query")
 	public String executeQuery(@RequestParam(required = true) String queryString, 
 			@RequestParam(required = true) boolean download,
+			@RequestParam(required = true) int totalRecords,
+			@RequestParam(required = true) boolean hasAbstract,
 			@RequestParam(required = true) String encoding,
 			@RequestParam(required = true) String userEmail) {
 		
@@ -190,7 +231,7 @@ public class VufindQueryController {
 			//Download URL will be sent to user by email later
 			
 			//First send an email acknowledging the request was received
-			String waitMsg = waitMsgTop + " " + getTimeEstimate() + " " + waitMsgBottom;
+			String waitMsg = waitMsgTop + " " + getTimeEstimate(totalRecords, hasAbstract) + " " + waitMsgBottom;
 			mailer.sendMail(sender, userEmail, confSubject, waitMsg);
 			
 			//Create the CSV file

@@ -1,6 +1,6 @@
 # Vufind Search Results Bulk Downloader Service and Front-End Customization
 
-Service, templates, controllers, and forms for customizing VuFind so the search results can be exported in CSV format. An "Export CSV" link is added to the search results page, opening a form where the user informs their email address and provides a captcha-based form validation. The actual CSV file creation is performed by the external service, which is called by VuFind and returns a file download link, which is in turn emailed to the user.
+Service, templates, controllers, and forms for customizing VuFind so the search results can be exported in CSV format. An "Export CSV" link is added to the search results page, opening a form where the user can select fields to be exported, inform their email address and provide a captcha-based form validation. The actual CSV file creation is performed by the external service, which is called by VuFind and can, based on a download limit parameter, either return the file for download or send the file download link to the user by email.
 
 *Developed by LA Referencia / IBICT*
 
