@@ -1,7 +1,7 @@
 ##Solr query properties##
 
 #Server address
-query.solr-server = http://200.130.45.74:8081/solr/biblio
+query.solr-server = http://127.0.0.1:8081/solr/biblio
 
 ##CSV file properties##
 
@@ -34,7 +34,7 @@ smtp.port = 587
 #Email sender address which will appear in the 'From:' and 'Reply-to:' fields in the e-mails
 #sent to users. Also used for SMTP server authentication
 mail.sender = bdtd.export.service@gmail.com
-mail.sender-pwd = tebvqiephzjiibbl
+mail.sender-pwd = your-user-pwd
 #Email subject for the confirmation e-mails
 mail.confirm-subject = Exportação de busca na BDTD
 #Confirmation message sent when the file was immediately downloaded. Some HTML is fine (mail 
