@@ -16,8 +16,8 @@ class ExecuteBulkExport
 		$this->email = $paramsArray[0];
 		$this->serviceUrl = $paramsArray[1];
 		$this->paramString = $paramsArray[2];
-		$this->totalRecords = $paramsArray[3];
-		$this->hasAbstract = $paramsArray[4];
+		$this->totalRecords = intval($paramsArray[3]);
+		$this->hasAbstract = filter_var($paramsArray[4], FILTER_VALIDATE_BOOLEAN);
 		$this->encoding = $paramsArray[5];
 	}
 	
