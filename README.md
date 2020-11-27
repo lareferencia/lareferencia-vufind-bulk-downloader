@@ -77,6 +77,6 @@ In the `vufind` folder:
 
 4. Language files in the `languages` folder
 
-The entries for the new templates were added in the language files for English, Spanish, and Brazilian Portuguese. At least the English file, `en.ini`, must be copied to the folder `<VUFIND_HOME>\languages`. The remaining language files can be copied as desired. For adding the entries for a different language, edit the corresponding language file and add the entries at the end of the file `en.ini`, from line 1252 on.
+	The entries for the new templates were added in the language files for English, Spanish, and Brazilian Portuguese. At least the English file, `en.ini`, must be copied to the folder `<VUFIND_HOME>\languages`. The remaining language files can be copied as desired. For adding the entries for a different language, edit the corresponding language file and add the entries at the end of the file `en.ini`, from line 1252 on.
 
 VuFind should now include the new template and custom module files. If the new routes are not being found, delete the config cache at `<VUFIND_HOME>\local\cache\configs` so the new configuration, including the new routes, are correctly loaded. It may also be necessary to delete the language cache, at `<VUFIND_HOME>\local\cache\languages`.

@@ -1,7 +1,7 @@
 ##Solr query properties##
 
 #Server address
-query.solr-server = http://127.0.0.1:8081/solr/biblio
+query.solr-server = http://200.130.45.74:8081/solr/biblio
 
 ##CSV file properties##
 
@@ -9,22 +9,51 @@ query.solr-server = http://127.0.0.1:8081/solr/biblio
 file.path = C:\\Archive\\
 #Separator character
 file.sep-char = ;
-#Order in which columns will appear in the CSV, and their headers. This list of fields
-#must be synchronized with the list of fields available for export defined in VuFind
-file.header = {"id":"Identificador", \
-			   "title":"Título", \
-			   "dc.description.resumo.por.fl_txt_mv":"Abstract Português", \
-			   "dc.description.abstract.eng.fl_txt_mv":"Abstract Inglês", \
-			   "author":"Primeiro Autor", \
-			   "author2":"Co-Autores", \
-			   "author_id_str":"Id do Autor", \
-			   "shortIdent_author_str":"Id Curto do Autor", \
-			   "format":"Tipo", \
-			   "topic":"Tópicos", \
-			   "instname_str":"Instituição", \
-			   "publishDate":"Data de Publicação", \
-			   "language":"Idioma", \
-			   "url":"URL"}
+#Symbol used to separate values in multiple-value fields
+file.list-sep = ||
+#CSV column headers. This list of fields must be synchronized with the list of 
+#fields available for export defined in VuFind. If fields are to be aggregated 
+#in a single column, the header must be set to "null", and the new column header
+#defined in the 'file.agg-fields' property below
+file.header = {"author":"Autor(a)", \
+				"dc.identifier.author-lattes.pt_BR.fl_str_mv":"ID Lattes do(a) autor(a)", \
+				"dc.contributor.advisor.pt_BR.fl_str_mv":"Orientador(a)", \
+				"dc.contributor.advisorID.pt_BR.fl_str_mv":"ID Lattes do(a) orientador(a)", \
+				"dc.contributor.referee1.fl_str_mv":"null", \
+				"dc.contributor.referee2.fl_str_mv":"null", \
+				"dc.contributor.referee3.fl_str_mv":"null", \
+				"dc.contributor.referee4.fl_str_mv":"null", \
+				"dc.contributor.referee5.fl_str_mv":"null", \
+				"dc.contributor.referee1ID.fl_str_mv":"null", \
+				"dc.contributor.referee2ID.fl_str_mv":"null", \
+				"dc.contributor.referee3ID.fl_str_mv":"null", \
+				"dc.contributor.referee4ID.fl_str_mv":"null", \
+				"dc.contributor.referee5ID.fl_str_mv":"null", \
+				"title":"Título", \
+				"dc.description.resumo.por.fl_txt_mv":"Resumo em Português", \
+				"dc.description.abstract.eng.fl_txt_mv":"Resumo em Inglês", \
+				"dc.date.defense.pt_BR.fl_str_mv":"Ano de defesa", \
+				"instname_str":"Instituição de defesa", \
+				"instacron_str":"Sigla da instituição de defesa", \
+				"dc.publisher.country.fl_str_mv":"País da instituição de defesa", \
+				"geolocationplace":"Região da instituição de defesa", \
+				"polygonPoint":"UF da instituição de defesa", \
+				"dc.publisher.administrative.fl_str_mv":"Natureza administrativa da instituição de defesa", \
+				"pointLatitude":"Latitude da instituição de defesa", \
+				"pointLongitude":"Longitude da instituição de defesa", \
+				"inst_id":"Identificador único da instituição de defesa", \
+				"dc.publisher.department.fl_str_mv":"Departamento da instituição de defesa", \
+				"dc.publisher.program.fl_str_mv":"Programa de Pós-Graduação da instituição de defesa", \
+				"dc.publisher.programID.fl_str_mv":"Identificador único do Programa de Pós-Graduação da instituição de defesa", \
+				"dc.publisher.knowledgearea.fl_str_mv":"Área do conhecimento", \
+				"dc.publisher.areaavaliacao.fl_str_mv":"Área de avaliação", \
+				"eu_rights_str_mv":"Direitos", \
+				"dc.description.degreelevel.pt_BR.fl_txt_mv":"Grau", \
+				"topic":"Assuntos"}
+		   
+#Aggregated fields, which gather multiple fields in a single column as a list
+file.agg-fields = {"Membros da banca":"dc.contributor.referee1.fl_str_mv, dc.contributor.referee2.fl_str_mv, dc.contributor.referee3.fl_str_mv, dc.contributor.referee4.fl_str_mv, dc.contributor.referee5.fl_str_mv", \
+					"ID Lattes dos membros da banca":"dc.contributor.referee1ID.fl_str_mv, dc.contributor.referee2ID.fl_str_mv, dc.contributor.referee3ID.fl_str_mv, dc.contributor.referee4ID.fl_str_mv, dc.contributor.referee5ID.fl_str_mv"}
 
 ##Email properties##
 
@@ -34,7 +63,7 @@ smtp.port = 587
 #Email sender address which will appear in the 'From:' and 'Reply-to:' fields in the e-mails
 #sent to users. Also used for SMTP server authentication
 mail.sender = bdtd.export.service@gmail.com
-mail.sender-pwd = your-user-pwd
+mail.sender-pwd = tebvqiephzjiibbl
 #Email subject for the confirmation e-mails
 mail.confirm-subject = Exportação de busca na BDTD
 #Confirmation message sent when the file was immediately downloaded. Some HTML is fine (mail 

@@ -43,8 +43,14 @@ public class VufindQueryController {
 	@Value("${file.sep-char}")
 	private char sep;
 	
+	@Value("${file.list-sep}")
+	private String listSep;
+	
 	@Value("#{${file.header}}")
 	private Map<String, String> fieldList;
+	
+	@Value("#{${file.agg-fields}}")
+	private Map<String, List<String>> aggFields;
 	
 	@Value("${smtp.host}")
 	private String smtpHost;
@@ -97,16 +103,19 @@ public class VufindQueryController {
 	@Value("${server.port}")
 	private String port;
 	
+	// Build the Solr query URL
 	private String buildQueryUrl (String queryString){
 		
 		return solrServer + "/select?" + queryString;
 	}
 	
+	// Build the URL for downloading the generated CSV file
 	private String buildDownloadUrl (String fileName){
 
 		return "http://" + host + ":" + port + "/query/download?fileName=" + fileName;
 	}
 	
+	// Get the list of fields selected by the user for export
 	private List<String> getUserFields (String queryString){
 		
 		List<String> fields = new ArrayList<String>();
@@ -118,6 +127,7 @@ public class VufindQueryController {
 		return fields;
 	}
 	
+	// Estimate the time for creating the CSV file
 	private String getTimeEstimate (int totalRecords, boolean hasAbstract){
 		
 		String estimate = new String();
@@ -149,6 +159,7 @@ public class VufindQueryController {
 		return estimate;
 	}
 	
+	// Query Solr to get the data and create a CSV file from it
 	private void createFile (String queryString, String outputFile, String encoding){
 		
 		StringBuffer content = new StringBuffer();
@@ -178,7 +189,7 @@ public class VufindQueryController {
 		//Convert to CSV and save to compressed file		
 		FileUtils f = new FileUtils();
 		List<String> userFields = getUserFields(queryString);
-		List<List<String>> csv = f.JSONtoCSV(content.toString(), fieldList, userFields);
+		List<List<String>> csv = f.JSONtoCSV(content.toString(), fieldList, userFields, aggFields, listSep);
 		f.saveCSVFile(csv, sep, outputFile, encoding, true); //always compress CSV file
 	}
 	
