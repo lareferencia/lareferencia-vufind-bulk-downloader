@@ -1,7 +1,6 @@
 <?php 
 $form = $this->form;
 $form->prepare();
-
 $form->setAttribute('action', $this->url('bulkexport-csv') . '?total=' . $this->total);
 $form->setAttribute('method', 'post');
 
@@ -19,7 +18,6 @@ foreach ($selFields as $field){
 	array_push($selLabels, $this->transEsc($field));
 }
 
-$formLabel = $this->plugin('formLabel');
 echo $this->form()->openTag($form);
 ?>
 
@@ -27,41 +25,62 @@ echo $this->form()->openTag($form);
 	<h2><?=$this->transEsc('export_csv')?></h2>
 </div>
 
+<div>
+	<?=$this->transEsc('export_msg') ?>
+</div>
+
+<br>
+
+<?php if ($this->optionalFields): ?>
 <div style="margin-bottom:10px" class="select">
 <?php
-	echo $formLabel->openTag() . $this->transEsc('default_fields') . implode(', ', $defLabels) . '.<br>' . $this->transEsc('select_fields');
-	echo $formLabel->closeTag();
+	echo $this->transEsc('default_fields') . implode(', ', $defLabels) . '<br>';
+	echo $this->transEsc('select_fields') . '<br><br>';
 	$fields = $form->get('fields');
 	$fields->setValueOptions($selLabels);
-    echo $this->formSelect($fields);
-    echo $this->formElementErrors($fields);  
+	echo $this->formSelect($fields);
+	echo $this->formElementErrors($fields);  
+?></div>
+<?php endif; ?>
+
+<div class="checkbox-inline">
+<?php
+    $primaryAbstract = $form->get('primaryAbstract');
+	echo $this->formCheckbox($primaryAbstract);
+    echo $this->formElementErrors($primaryAbstract);
+	echo $this->transEsc('include_primary_abstract');
 ?></div>
 
+<br>
+
+<?php if ($this->foreignAbstract): ?>
 <div style="margin-bottom:20px" class="checkbox-inline">
 <?php
-    $abstract = $form->get('abstract');
-	echo $this->formCheckbox($abstract);
-    echo $this->formElementErrors($abstract);
-	echo $formLabel->openTag() . $this->transEsc('include_abstract');
-    echo $formLabel->closeTag();
+	$foreignAbstract = $form->get('foreignAbstract');
+	echo $this->formCheckbox($foreignAbstract);
+	echo $this->formElementErrors($foreignAbstract);
+	echo $this->transEsc('include_foreign_abstract');	
 ?></div>
+<?php else: ?>
+<br>
+<?php endif; ?>
 
+<?php if ($this->encodingOption): ?>
 <div style="margin-bottom:20px" class="select">
 <?php
-    $os = $form->get('os');
-	echo $formLabel->openTag() . $this->transEsc('operating_system');
-    echo $this->formSelect($os);
-    echo $this->formElementErrors($os);
-    echo $formLabel->closeTag();
+	$os = $form->get('os');
+	echo $this->transEsc('operating_system');
+	echo $this->formSelect($os);
+	echo $this->formElementErrors($os);	
 ?></div>
+<?php endif; ?>
 
 <div style="margin-bottom:20px" class="form_element">
 <?php
     $email = $form->get('email');
-	echo $formLabel->openTag() . $this->transEsc('email_address');
+	echo $this->transEsc('email_address');
     echo $this->formEmail($email);
     echo $this->formElementErrors($email);
-    echo $formLabel->closeTag();
 ?></div>
 
 <div style="margin-bottom:20px" class="form_element">
@@ -69,7 +88,6 @@ echo $this->form()->openTag($form);
     $captcha = $form->get('captcha');
     echo $this->formCaptcha($captcha);
     echo $this->formElementErrors($captcha);
-    echo $formLabel->closeTag();
 ?></div>
 
 <div style="margin-bottom:20px">

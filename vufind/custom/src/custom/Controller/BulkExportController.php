@@ -28,15 +28,24 @@ class BulkExportController extends AbstractBase
 		// Get the number of records returned in the search
 		$totalRecords = $this->params()->fromQuery('total');
 		
-		// Get the mandatory and optional lists of fields
+		// Get the query options
 		$exportConfig = $this->getConf($this->bulkExportConf);
+		$useForeignAbstract = $exportConfig->Query->showForeignAbstractOption;
+		$showOptionalFields = $exportConfig->Query->showOptionalFields;
 		$defaultFields = $exportConfig->Query->defaultFields;
 		$selectFields = $exportConfig->Query->selectFields;
+		$showEncodingOption = $exportConfig->Encoding->showEncodingOption;
 
 		// Display the export form
 		$form = new BulkExportConfirm($this->getCaptcha());
 		
-		return $this->createViewModel(['form' => $form, 'total' => $totalRecords, 'defFields' => $defaultFields, 'selFields' => $selectFields]);
+		return $this->createViewModel(['form' => $form, 
+										'total' => $totalRecords, 
+										'foreignAbstract' => $useForeignAbstract, 
+										'optionalFields' => $showOptionalFields,
+										'defFields' => $defaultFields, 
+										'selFields' => $selectFields,
+										'encodingOption' => $showEncodingOption]);
 	}
 	
 	public function csvAction()
@@ -57,35 +66,53 @@ class BulkExportController extends AbstractBase
 			// Build the field list
 			$exportConfig = $this->getConf($this->bulkExportConf);
 			$defaultFields = explode(',', $exportConfig->Query->defaultFields);
-			$selectFields = explode(',', $exportConfig->Query->selectFields);
-			$fields = $form->get('fields')->getValue();
-			$abstract = $form->get('abstract')->getValue();
+			$showOptionalFields = $exportConfig->Query->showOptionalFields;
 			$fullFieldList = $defaultFields;
+			
+			if ($showOptionalFields){
+				$selectFields = explode(',', $exportConfig->Query->selectFields);
+				$fields = $form->get('fields')->getValue();
+			
+				if(!empty($fields)){
+					foreach ($fields as $field){
+						array_push($fullFieldList, $selectFields[$field]);
+					}	
+				}
+			}	
+			
+			// Include abstract fields
+			$useForeignAbstract = $exportConfig->Query->showForeignAbstractOption;
+			$primaryAbstract = $form->get('primaryAbstract')->getValue();
 			$hasAbstract = false;
 			
-			if(!empty($fields)){
-				foreach ($fields as $field){
-					array_push($fullFieldList, $selectFields[$field]);
-				}	
-			}
-			
-			if($abstract == 'yes'){
-				$abstracts = explode(',', $exportConfig->Query->abstracts);
-				
-				foreach ($abstracts as $a){
-					array_push($fullFieldList, $a);
-				}
-				
+			if($primaryAbstract == 'yes'){
+				array_push($fullFieldList, $exportConfig->Query->primaryLangAbstract);
 				$hasAbstract = true;
 			}
 			
-			// Define file encoding
-			$os = $form->get('os')->getValue();
-			$encoding = 'UTF-8'; // default encoding
-			
-			if ($os == 0) {
-				$encoding = 'ISO-8859'; // Windows encoding
+			if ($useForeignAbstract){
+				$foreignAbstract = $form->get('foreignAbstract')->getValue();
+				
+				if($foreignAbstract == 'yes'){
+					array_push($fullFieldList, $exportConfig->Query->foreignLangAbstract);
+					$hasAbstract = true;
+				}
 			}
+			
+			// Define file encoding
+			$encoding = $exportConfig->Encoding->defaultEncoding;
+			$showEncodingOption = $exportConfig->Encoding->showEncodingOption;
+			
+			if ($showEncodingOption) {
+				$os = $form->get('os')->getValue();
+						
+				if ($os == 0) {
+					$encoding = 'ISO-8859'; // Windows encoding
+				}
+				else {
+					$encoding = 'UTF-8'; // Linux and Mac OS encoding
+				}
+			}	
 			
 			// Export service params
 			$serviceUrl = $exportConfig->Service->serviceUrl;

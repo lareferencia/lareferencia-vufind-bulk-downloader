@@ -31,7 +31,17 @@ class BulkExportConfirm extends Form
 		
 		$this->add([
              'type' => Element\Checkbox::class,
-             'name' => 'abstract',
+             'name' => 'primaryAbstract',
+             'options' => [
+                     'use_hidden_element' => true,
+                     'checked_value' => 'yes',
+                     'unchecked_value' => 'no',
+             ],
+		]);
+		
+		$this->add([
+             'type' => Element\Checkbox::class,
+             'name' => 'foreignAbstract',
              'options' => [
                      'use_hidden_element' => true,
                      'checked_value' => 'yes',
@@ -76,12 +86,24 @@ class BulkExportConfirm extends Form
 			'name' => 'fields',
 			'required' => false,
 		];
+		
+		$foreignAbstractInput = [
+			'name' => 'foreignAbstract',
+			'required' => false,
+		];
+		
+		$osInput = [
+			'name' => 'os',
+			'required' => false,
+		];
 
 		$captchaInput = new Input('captcha');
 		$sendInput = new Input('send');
 		
 		$inputFilter = new InputFilter();
 		$inputFilter->add($fieldsInput);
+		$inputFilter->add($foreignAbstractInput);
+		$inputFilter->add($osInput);
 		$inputFilter->add($captchaInput);
 		$inputFilter->add($sendInput);
 		
