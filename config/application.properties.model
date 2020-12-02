@@ -1,7 +1,7 @@
 ##Solr query properties##
 
 #Server address
-query.solr-server = http://200.130.45.74:8081/solr/biblio
+query.solr-server = http://localhost:8081/solr/biblio
 
 ##CSV file properties##
 
@@ -15,33 +15,35 @@ file.list-sep = ||
 #fields available for export defined in VuFind. If fields are to be aggregated 
 #in a single column, the header must be set to "null", and the new column header
 #defined in the 'file.agg-fields' property below
-file.header = {"author":"Autor(a)", \
-				"dc.identifier.author-lattes.pt_BR.fl_str_mv":"ID Lattes do(a) autor(a)", \
-				"dc.contributor.advisor.pt_BR.fl_str_mv":"Orientador(a)", \
-				"dc.contributor.advisorID.pt_BR.fl_str_mv":"ID Lattes do(a) orientador(a)", \
+file.header = {"dc.contributor.author.fl_str_mv":"Autor(a)", \
+				"dc.contributor.authorLattes.fl_str_mv":"ID Lattes do(a) autor(a)", \
+				"dc.contributor.advisor1.fl_str_mv":"null", \
+				"dc.contributor.advisor2.fl_str_mv":"null", \
+				"dc.contributor.advisor1Lattes.fl_str_mv":"null", \
+				"dc.contributor.advisor2Lattes.fl_str_mv":"null", \
 				"dc.contributor.referee1.fl_str_mv":"null", \
 				"dc.contributor.referee2.fl_str_mv":"null", \
 				"dc.contributor.referee3.fl_str_mv":"null", \
 				"dc.contributor.referee4.fl_str_mv":"null", \
 				"dc.contributor.referee5.fl_str_mv":"null", \
-				"dc.contributor.referee1ID.fl_str_mv":"null", \
-				"dc.contributor.referee2ID.fl_str_mv":"null", \
-				"dc.contributor.referee3ID.fl_str_mv":"null", \
-				"dc.contributor.referee4ID.fl_str_mv":"null", \
-				"dc.contributor.referee5ID.fl_str_mv":"null", \
+				"dc.contributor.referee1Lattes.fl_str_mv":"null", \
+				"dc.contributor.referee2Lattes.fl_str_mv":"null", \
+				"dc.contributor.referee3Lattes.fl_str_mv":"null", \
+				"dc.contributor.referee4Lattes.fl_str_mv":"null", \
+				"dc.contributor.referee5Lattes.fl_str_mv":"null", \
 				"title":"Título", \
 				"dc.description.resumo.por.fl_txt_mv":"Resumo em Português", \
 				"dc.description.abstract.eng.fl_txt_mv":"Resumo em Inglês", \
-				"dc.date.defense.pt_BR.fl_str_mv":"Ano de defesa", \
+				"dc.date.issued.fl_str_mv":"Ano de defesa", \
 				"instname_str":"Instituição de defesa", \
 				"instacron_str":"Sigla da instituição de defesa", \
 				"dc.publisher.country.fl_str_mv":"País da instituição de defesa", \
-				"geolocationplace":"Região da instituição de defesa", \
-				"polygonPoint":"UF da instituição de defesa", \
+				"dc.geolocationplace.none.fl_str_mv":"Região da instituição de defesa", \
+				"dc.polygonPoint.none.fl_str_mv":"UF da instituição de defesa", \
 				"dc.publisher.administrative.fl_str_mv":"Natureza administrativa da instituição de defesa", \
-				"pointLatitude":"Latitude da instituição de defesa", \
-				"pointLongitude":"Longitude da instituição de defesa", \
-				"inst_id":"Identificador único da instituição de defesa", \
+				"dc.pointLatitude.none.fl_str_mv":"Latitude da instituição de defesa", \
+				"dc.pointLongitude.none.fl_str_mv":"Longitude da instituição de defesa", \
+				"dc.publisherID.none.fl_str_mv":"Identificador único da instituição de defesa", \
 				"dc.publisher.department.fl_str_mv":"Departamento da instituição de defesa", \
 				"dc.publisher.program.fl_str_mv":"Programa de Pós-Graduação da instituição de defesa", \
 				"dc.publisher.programID.fl_str_mv":"Identificador único do Programa de Pós-Graduação da instituição de defesa", \
@@ -49,11 +51,14 @@ file.header = {"author":"Autor(a)", \
 				"dc.publisher.areaavaliacao.fl_str_mv":"Área de avaliação", \
 				"eu_rights_str_mv":"Direitos", \
 				"dc.description.degreelevel.pt_BR.fl_txt_mv":"Grau", \
-				"topic":"Assuntos"}
+				"dc.subject.por.fl_str_mv":"Assuntos em português", \
+				"dc.subject.eng.fl_str_mv":"Assuntos em inglês"}
 		   
 #Aggregated fields, which gather multiple fields in a single column as a list
-file.agg-fields = {"Membros da banca":"dc.contributor.referee1.fl_str_mv, dc.contributor.referee2.fl_str_mv, dc.contributor.referee3.fl_str_mv, dc.contributor.referee4.fl_str_mv, dc.contributor.referee5.fl_str_mv", \
-					"ID Lattes dos membros da banca":"dc.contributor.referee1ID.fl_str_mv, dc.contributor.referee2ID.fl_str_mv, dc.contributor.referee3ID.fl_str_mv, dc.contributor.referee4ID.fl_str_mv, dc.contributor.referee5ID.fl_str_mv"}
+file.agg-fields = {"Orientadores":"dc.contributor.advisor1.fl_str_mv,dc.contributor.advisor2.fl_str_mv", \
+                   "ID Lattes dos orientadores":"dc.contributor.advisor1Lattes.fl_str_mv,dc.contributor.advisor2Lattes.fl_str_mv", \
+                   "Membros da banca":"dc.contributor.referee1.fl_str_mv, dc.contributor.referee2.fl_str_mv, dc.contributor.referee3.fl_str_mv, dc.contributor.referee4.fl_str_mv, dc.contributor.referee5.fl_str_mv", \
+                   "ID Lattes dos membros da banca":"dc.contributor.referee1Lattes.fl_str_mv,dc.contributor.referee2Lattes.fl_str_mv,dc.contributor.referee3Lattes.fl_str_mv,dc.contributor.referee4Lattes.fl_str_mv,dc.contributor.referee5Lattes.fl_str_mv"}
 
 ##Email properties##
 
@@ -63,7 +68,7 @@ smtp.port = 587
 #Email sender address which will appear in the 'From:' and 'Reply-to:' fields in the e-mails
 #sent to users. Also used for SMTP server authentication
 mail.sender = bdtd.export.service@gmail.com
-mail.sender-pwd = tebvqiephzjiibbl
+mail.sender-pwd = xxxxxxxxxxxxxxxx
 #Email subject for the confirmation e-mails
 mail.confirm-subject = Exportação de busca na BDTD
 #Confirmation message sent when the file was immediately downloaded. Some HTML is fine (mail 
