@@ -52,12 +52,23 @@ public class FileUtils {
 	// Convert a list to a formatted string which will fill a single cell in the CSV
 	private String listToString (List<String> list, String sep){
 		
-		String strList = new String();
+		String strList = "";
+		boolean empty = true;
 		
+		// Test if list only contains empty values
 		for (String item : list){
-			strList += item + sep;
+			if (!item.equals("")){
+				empty = false;
+				break;
+			}
 		}
-		strList = strList.substring(0, strList.length() - sep.length()); //remove last separator
+		
+		if (!empty){
+			for (String item : list){
+				strList += item + sep;
+			}
+			strList = strList.substring(0, strList.length() - sep.length()); //remove last separator
+		}	
 		
 		return strList;
 	}
