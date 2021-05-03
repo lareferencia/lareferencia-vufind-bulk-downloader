@@ -1,7 +1,7 @@
 ##Solr query properties##
 
 #Server address
-query.solr-server = http://localhost:8081/solr/biblio
+query.solr-server = http://192.168.0.195:8081/solr/biblio
 
 ##CSV file properties##
 
@@ -60,6 +60,11 @@ file.agg-fields = {"Orientadores":"dc.contributor.advisor1.fl_str_mv,dc.contribu
                    "Membros da banca":"dc.contributor.referee1.fl_str_mv, dc.contributor.referee2.fl_str_mv, dc.contributor.referee3.fl_str_mv, dc.contributor.referee4.fl_str_mv, dc.contributor.referee5.fl_str_mv", \
                    "ID Lattes dos membros da banca":"dc.contributor.referee1Lattes.fl_str_mv,dc.contributor.referee2Lattes.fl_str_mv,dc.contributor.referee3Lattes.fl_str_mv,dc.contributor.referee4Lattes.fl_str_mv,dc.contributor.referee5Lattes.fl_str_mv"}
 
+#Message to be show for empty fields
+file.null-msg = Campo não informado pela instituição de origem
+#Fields for which the message should be shown if empty
+file.null-msg-fields = dc.contributor.authorLattes.fl_str_mv,dc.contributor.advisor1Lattes.fl_str_mv
+
 ##Email properties##
 
 #SMTP server
@@ -68,7 +73,7 @@ smtp.port = 587
 #Email sender address which will appear in the 'From:' and 'Reply-to:' fields in the e-mails
 #sent to users. Also used for SMTP server authentication
 mail.sender = bdtd.export.service@gmail.com
-mail.sender-pwd = xxxxxxxxxxxxxxxx
+mail.sender-pwd = tebvqiephzjiibbl
 #Email subject for the confirmation e-mails
 mail.confirm-subject = Exportação de busca na BDTD
 #Confirmation message sent when the file was immediately downloaded. Some HTML is fine (mail 

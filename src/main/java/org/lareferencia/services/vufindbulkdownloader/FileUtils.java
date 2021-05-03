@@ -50,12 +50,13 @@ public class FileUtils {
 	}
 	
 	// Convert a list to a formatted string which will fill a single cell in the CSV
-	private String listToString (List<String> list, String sep){
+	private String listToString (List<String> list, String sep, String nullMsg){
 		
 		String strList = "";
 		boolean empty = true;
+		boolean showNullMsg = true;
 		
-		// Test if list only contains empty values
+		// Test if list only contains empty values...
 		for (String item : list){
 			if (!item.equals("")){
 				empty = false;
@@ -63,7 +64,18 @@ public class FileUtils {
 			}
 		}
 		
-		if (!empty){
+		// ... or only the null message
+		for (String item : list){
+			if (!item.equals(nullMsg)){
+				showNullMsg = false;
+				break;
+			}
+		}
+		
+		if (showNullMsg) {
+			strList = nullMsg;
+		}
+		else if (!empty){
 			for (String item : list){
 				strList += item + sep;
 			}
@@ -75,7 +87,8 @@ public class FileUtils {
 	
 	// Convert a JSON response into a CSV-ready structure
 	@SuppressWarnings("unchecked")
-	public List<List<String>> JSONtoCSV (String json, Map<String, String> fieldList, List<String> userFields, Map<String, List<String>> aggFields, String listSep){
+	public List<List<String>> JSONtoCSV (String json, Map<String, String> fieldList, List<String> userFields, 
+			Map<String, List<String>> aggFields, String listSep, String nullMsg, List<String> nullMsgFields){
 		
 		List<List<String>> csv = new ArrayList<List<String>>();
 		Set<String> fields = fieldList.keySet();
@@ -124,10 +137,20 @@ public class FileUtils {
 
                 			if (attribute == null){ //doc has no such field
                 				if (label.equals("null")){ //empty field to be aggregated, save for later retrieval
-                					toAggregate.put(field, "");
+                					if (nullMsgFields.contains(field)) {
+                						toAggregate.put(field, nullMsg);
+                					}
+                					else {
+                						toAggregate.put(field, "");
+                					}
                 				}
                 				else{
-                					line.set(index, "");
+                					if (nullMsgFields.contains(field)) { //a custom message should be shown instead of a blank
+                						line.set(index, nullMsg);
+                					}
+                					else {
+                						line.set(index, "");
+                					}	
                 				}	
                 			}
                 			else{
@@ -140,10 +163,10 @@ public class FileUtils {
                 					}  
                 					
                 					if (label.equals("null")){ //list field to be aggregated, save for later retrieval
-                						toAggregate.put(field, listToString(jsonList, listSep));
+                						toAggregate.put(field, listToString(jsonList, listSep, nullMsg));
                 					}
                 					else{
-                						line.set(index, listToString(jsonList, listSep));
+                						line.set(index, listToString(jsonList, listSep, nullMsg));
                 					}	
                 				}
                 				else{
@@ -166,7 +189,7 @@ public class FileUtils {
                 		for (String entry : aggFields.get(aggField)){
                 			items.add(toAggregate.get(entry));
                 		}
-                		line.set(index, listToString(items, listSep));
+                		line.set(index, listToString(items, listSep, nullMsg));
                 	}
                 	csv.add(line);
                 }

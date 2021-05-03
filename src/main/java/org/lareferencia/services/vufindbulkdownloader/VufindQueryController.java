@@ -52,6 +52,12 @@ public class VufindQueryController {
 	@Value("#{${file.agg-fields}}")
 	private Map<String, List<String>> aggFields;
 	
+	@Value("${file.null-msg}")
+	private String nullMsg;
+	
+	@Value("${file.null-msg-fields}")
+	private List<String> nullMsgFields;
+	
 	@Value("${smtp.host}")
 	private String smtpHost;
 	
@@ -189,7 +195,7 @@ public class VufindQueryController {
 		//Convert to CSV and save to compressed file		
 		FileUtils f = new FileUtils();
 		List<String> userFields = getUserFields(queryString);
-		List<List<String>> csv = f.JSONtoCSV(content.toString(), fieldList, userFields, aggFields, listSep);
+		List<List<String>> csv = f.JSONtoCSV(content.toString(), fieldList, userFields, aggFields, listSep, nullMsg, nullMsgFields);
 		f.saveCSVFile(csv, sep, outputFile, encoding, true); //always compress CSV file
 	}
 	
@@ -211,11 +217,15 @@ public class VufindQueryController {
 	
 	@RequestMapping("/query")
 	public String executeQuery(@RequestParam(required = true) String queryString, 
-			@RequestParam(required = true) boolean download,
-			@RequestParam(required = true) int totalRecords,
-			@RequestParam(required = true) boolean hasAbstract,
+			@RequestParam(required = true) String download,
+			@RequestParam(required = true) String totalRecords,
+			@RequestParam(required = true) String hasAbstract,
 			@RequestParam(required = true) String encoding,
 			@RequestParam(required = true) String userEmail) {
+		
+		boolean isDownload = Boolean.parseBoolean(download);
+		boolean includeAbstract = Boolean.parseBoolean(hasAbstract);
+		int numRecords = Integer.valueOf(totalRecords);
 		
 		String date = ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("uuuuMMdd"));
 		String sufix = queryString + date;
@@ -225,7 +235,7 @@ public class VufindQueryController {
 		
 		Mailer mailer = new Mailer(smtpHost, smtpPort, sender, pwd);
 		
-		if (download || Files.exists(Paths.get(outputFile + ".zip"))){
+		if (isDownload || Files.exists(Paths.get(outputFile + ".zip"))){
 			//User will be able to download the file immediately
 			
 			//Only creates the CSV file if a file created from the same query does not already exist
@@ -242,7 +252,7 @@ public class VufindQueryController {
 			//Download URL will be sent to user by email later
 			
 			//First send an email acknowledging the request was received
-			String waitMsg = waitMsgTop + " " + getTimeEstimate(totalRecords, hasAbstract) + " " + waitMsgBottom;
+			String waitMsg = waitMsgTop + " " + getTimeEstimate(numRecords, includeAbstract) + " " + waitMsgBottom;
 			mailer.sendMail(sender, userEmail, confSubject, waitMsg);
 			
 			//Create the CSV file
