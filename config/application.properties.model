@@ -21,6 +21,7 @@ file.header = {"dc.contributor.author.fl_str_mv":"Autor(a)", \
 				"dc.contributor.advisor2.fl_str_mv":"null", \
 				"dc.contributor.advisor1Lattes.fl_str_mv":"null", \
 				"dc.contributor.advisor2Lattes.fl_str_mv":"null", \
+				"dc.contributor.co.fl_str_mv":"Co-orientador(a)", \
 				"dc.contributor.referee1.fl_str_mv":"null", \
 				"dc.contributor.referee2.fl_str_mv":"null", \
 				"dc.contributor.referee3.fl_str_mv":"null", \
@@ -52,7 +53,8 @@ file.header = {"dc.contributor.author.fl_str_mv":"Autor(a)", \
 				"eu_rights_str_mv":"Direitos", \
 				"dc.description.degreelevel.pt_BR.fl_txt_mv":"Grau", \
 				"dc.subject.por.fl_str_mv":"Assuntos em português", \
-				"dc.subject.eng.fl_str_mv":"Assuntos em inglês"}
+				"dc.subject.eng.fl_str_mv":"Assuntos em inglês", \
+				"dc.identifier.citation.fl_str_mv":"Referência Bibliográfica"}
 		   
 #Aggregated fields, which gather multiple fields in a single column as a list
 file.agg-fields = {"Orientadores":"dc.contributor.advisor1.fl_str_mv,dc.contributor.advisor2.fl_str_mv", \
@@ -61,9 +63,9 @@ file.agg-fields = {"Orientadores":"dc.contributor.advisor1.fl_str_mv,dc.contribu
                    "ID Lattes dos membros da banca":"dc.contributor.referee1Lattes.fl_str_mv,dc.contributor.referee2Lattes.fl_str_mv,dc.contributor.referee3Lattes.fl_str_mv,dc.contributor.referee4Lattes.fl_str_mv,dc.contributor.referee5Lattes.fl_str_mv"}
 
 #Message to be show for empty fields
-file.null-msg = Campo não informado pela instituição de origem
-#Fields for which the message should be shown if empty
-file.null-msg-fields = dc.contributor.authorLattes.fl_str_mv,dc.contributor.advisor1Lattes.fl_str_mv
+file.null-msg = Não informado pela instituição
+#Fields for which the message should not be shown if empty
+file.no-msg-fields = dc.contributor.co.fl_str_mv
 
 ##Email properties##
 
@@ -73,7 +75,7 @@ smtp.port = 587
 #Email sender address which will appear in the 'From:' and 'Reply-to:' fields in the e-mails
 #sent to users. Also used for SMTP server authentication
 mail.sender = bdtd.export.service@gmail.com
-mail.sender-pwd = tebvqiephzjiibbl
+mail.sender-pwd = ktwniyniattdaddz
 #Email subject for the confirmation e-mails
 mail.confirm-subject = Exportação de busca na BDTD
 #Confirmation message sent when the file was immediately downloaded. Some HTML is fine (mail 

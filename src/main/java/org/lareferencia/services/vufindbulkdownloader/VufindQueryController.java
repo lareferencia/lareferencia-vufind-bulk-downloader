@@ -55,8 +55,8 @@ public class VufindQueryController {
 	@Value("${file.null-msg}")
 	private String nullMsg;
 	
-	@Value("${file.null-msg-fields}")
-	private List<String> nullMsgFields;
+	@Value("${file.no-msg-fields}")
+	private List<String> noMsgFields;
 	
 	@Value("${smtp.host}")
 	private String smtpHost;
@@ -195,7 +195,7 @@ public class VufindQueryController {
 		//Convert to CSV and save to compressed file		
 		FileUtils f = new FileUtils();
 		List<String> userFields = getUserFields(queryString);
-		List<List<String>> csv = f.JSONtoCSV(content.toString(), fieldList, userFields, aggFields, listSep, nullMsg, nullMsgFields);
+		List<List<String>> csv = f.JSONtoCSV(content.toString(), fieldList, userFields, aggFields, listSep, nullMsg, noMsgFields);
 		f.saveCSVFile(csv, sep, outputFile, encoding, true); //always compress CSV file
 	}
 	

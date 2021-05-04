@@ -88,7 +88,7 @@ public class FileUtils {
 	// Convert a JSON response into a CSV-ready structure
 	@SuppressWarnings("unchecked")
 	public List<List<String>> JSONtoCSV (String json, Map<String, String> fieldList, List<String> userFields, 
-			Map<String, List<String>> aggFields, String listSep, String nullMsg, List<String> nullMsgFields){
+			Map<String, List<String>> aggFields, String listSep, String nullMsg, List<String> noMsgFields){
 		
 		List<List<String>> csv = new ArrayList<List<String>>();
 		Set<String> fields = fieldList.keySet();
@@ -137,7 +137,7 @@ public class FileUtils {
 
                 			if (attribute == null){ //doc has no such field
                 				if (label.equals("null")){ //empty field to be aggregated, save for later retrieval
-                					if (nullMsgFields.contains(field)) {
+                					if (!noMsgFields.contains(field)) {
                 						toAggregate.put(field, nullMsg);
                 					}
                 					else {
@@ -145,7 +145,7 @@ public class FileUtils {
                 					}
                 				}
                 				else{
-                					if (nullMsgFields.contains(field)) { //a custom message should be shown instead of a blank
+                					if (!noMsgFields.contains(field)) { //a custom message should be shown instead of a blank
                 						line.set(index, nullMsg);
                 					}
                 					else {
