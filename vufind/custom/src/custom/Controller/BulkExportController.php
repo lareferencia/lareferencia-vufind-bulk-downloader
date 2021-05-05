@@ -83,11 +83,11 @@ class BulkExportController extends AbstractBase
 			// Include abstract fields
 			$useForeignAbstract = $exportConfig->Query->showForeignAbstractOption;
 			$primaryAbstract = $form->get('primaryAbstract')->getValue();
-			$hasAbstract = false;
+			$hasAbstract = 'false';
 			
 			if($primaryAbstract == 'yes'){
 				array_push($fullFieldList, $exportConfig->Query->primaryLangAbstract);
-				$hasAbstract = true;
+				$hasAbstract = 'true';
 			}
 			
 			if ($useForeignAbstract){
@@ -95,7 +95,7 @@ class BulkExportController extends AbstractBase
 				
 				if($foreignAbstract == 'yes'){
 					array_push($fullFieldList, $exportConfig->Query->foreignLangAbstract);
-					$hasAbstract = true;
+					$hasAbstract = 'true';
 				}
 			}
 			
@@ -124,10 +124,10 @@ class BulkExportController extends AbstractBase
 			// Checks whether an export file generated from this query already exists
 			$fileExists = $this->callExportService($auxServUrl, $paramString, null, null, null, null);
 							
-			$maxTotal = intval($exportConfig->Query->maxDownload);
-			$queryLimit = intval($exportConfig->Query->rows);
+			$maxTotal = $exportConfig->Query->maxDownload;
+			$queryLimit = $exportConfig->Query->rows;
 			$totalRecords = $this->params()->fromQuery('total');
-			$totalRecords = intval($totalRecords < $queryLimit ? $totalRecords : $queryLimit);
+			$totalRecords = $totalRecords < $queryLimit ? $totalRecords : $queryLimit;
 			
 			if (($totalRecords <= $maxTotal) or ($fileExists == 'true')) {
 				// Immediate file download
@@ -338,7 +338,7 @@ class BulkExportController extends AbstractBase
 	{	
 		$client = $this->createClient($serviceUrl, Request::METHOD_POST);
 		$client->setParameterPost(['queryString' => $paramString, 
-								   'download' => true, 
+								   'download' => 'true', 
 								   'totalRecords' => $totalRecords,
 								   'hasAbstract' => $hasAbstract,
 								   'encoding' => $encoding, 

@@ -25,7 +25,7 @@ class ExecuteBulkExport
 	{
 		// Call the bulk downloader service to create the CSV file
 		$params = ['queryString' => $this->paramString, 
-				   'download' => false, 
+				   'download' => 'false', 
 				   'totalRecords' => $this->totalRecords,
 				   'hasAbstract' => $this->hasAbstract,
 				   'encoding' => $this->encoding, 
